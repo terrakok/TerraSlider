@@ -221,6 +221,7 @@ public class Slider extends ScrollView {
                     return super.onTouchEvent(event);
             }
         } else {
+            isClosed = false;
             isOverHeader = true;
             return super.onTouchEvent(event);
         }
