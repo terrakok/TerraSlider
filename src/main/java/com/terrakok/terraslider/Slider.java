@@ -131,6 +131,30 @@ public class Slider extends ScrollView {
         return false;
     }
 
+    /**
+     * This method toggle slider
+     */
+    public void toggleSlider() {
+        mScroller.forceFinished(true);
+
+        //эмуляция касания, чтобы остановить супер скроллер
+        MotionEvent motionEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+        super.onTouchEvent(motionEvent);
+
+        //чтобы не останавливать, как после флинга
+        isOverHeader = false;
+
+        if (!isClosed) {
+            //закрываем слайдер
+            scrollTo(0, 0);
+            isClosed = true;
+        } else {
+            //открываем слайдер
+            scrollTo(0, mHeaderSize);
+            isClosed = false;
+        }
+    }
+
     //автоматически довести до края (открыть/закрыть)
     private void doAutoScrolling() {
         if (isClosed) {
