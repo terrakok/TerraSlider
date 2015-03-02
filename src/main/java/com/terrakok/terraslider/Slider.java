@@ -17,7 +17,7 @@ import java.util.ArrayList;
  */
 public class Slider extends ScrollView {
     //высота, после которой сработает автоскролл
-    private final static int DIV_HEIGHT = 150;
+    private int MAX_OFFSET_FOR_AUTOSCROLL = 150;
 
     //id "тела" слайдера
     private int mBodyId = -1;
@@ -61,27 +61,28 @@ public class Slider extends ScrollView {
 
     public Slider(Context context) {
         super(context);
-        init();
+        init(context);
     }
 
     public Slider(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
     public Slider(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public Slider(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init();
+        init(context);
     }
 
-    private void init() {
+    private void init(Context context) {
         mAnimator.addUpdateListener(mAnimatorUpdateListener);
+        MAX_OFFSET_FOR_AUTOSCROLL = context.getResources().getDimensionPixelSize(R.dimen.max_offset);
     }
 
     /**
@@ -158,14 +159,14 @@ public class Slider extends ScrollView {
     //автоматически довести до края (открыть/закрыть)
     private void doAutoScrolling() {
         if (isClosed) {
-            if (getScrollY() > DIV_HEIGHT) {
+            if (getScrollY() > MAX_OFFSET_FOR_AUTOSCROLL) {
                 autoScrollUp();
                 isClosed = false;
             } else {
                 autoScrollDown();
             }
         } else {
-            if (getScrollY() < mHeaderSize - DIV_HEIGHT) {
+            if (getScrollY() < mHeaderSize - MAX_OFFSET_FOR_AUTOSCROLL) {
                 autoScrollDown();
                 isClosed = true;
             } else {
@@ -196,10 +197,14 @@ public class Slider extends ScrollView {
         //если при флинге из зоны isOverHeader = true попали ниже хэдера, то останавливаем движение
         if (isOverHeader && currentY < mHeaderSize) {
             setScrollY(mHeaderSize);
-        }
 
-        for (Callbacks c : mCallbacks) {
-            c.onScrollChanged(-(currentY - mHeaderSize));
+            for (Callbacks c : mCallbacks) {
+                c.onScrollChanged(0);
+            }
+        } else {
+            for (Callbacks c : mCallbacks) {
+                c.onScrollChanged(-(currentY - mHeaderSize));
+            }
         }
     }
 
