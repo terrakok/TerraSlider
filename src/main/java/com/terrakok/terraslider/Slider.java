@@ -108,6 +108,10 @@ public class Slider extends ScrollView {
         }
     }
 
+    public boolean isClosed() {
+        return isClosed;
+    }
+
     /**
      * This method close slider if it was open
      *
@@ -145,14 +149,15 @@ public class Slider extends ScrollView {
         //чтобы не останавливать, как после флинга
         isOverHeader = false;
 
-        if (!isClosed) {
-            //закрываем слайдер
-            scrollTo(0, 0);
-            isClosed = true;
-        } else {
+        if (isClosed) {
             //открываем слайдер
-            scrollTo(0, mHeaderSize);
+            autoScrollUp();
             isClosed = false;
+        } else {
+            //закрываем слайдер
+            setScrollY(mHeaderSize);
+            autoScrollDown();
+            isClosed = true;
         }
     }
 
